@@ -77,7 +77,10 @@ def create_modules(module_defs):
             anchors = [anchors[i] for i in anchor_idxs]
             num_classes = int(module_def["classes"])
             img_size = int(hyperparams["height"])
+            yolo_layer = YOLOLayer(anchors, num_classes, img_size)
+            modules.add_module(f"yolo_{module_i}", yolo_layer)
             # Define detection layer
+        
         elif module_def["type"] == "lstm":
             input_size=int(module_def["input_size"])
             hidden_size=int(module_def["hidden_size"])
@@ -97,11 +100,10 @@ def create_modules(module_defs):
             f"relu_{module_i}",
             nn.ReLU(inplace=True)
             )
+        
         elif module_def["type"] == "rolo":
             layers = [int(x) for x in module_def["layers"].split(",")]
             modules.add_module(f"rolo_{module_i}", EmptyLayer())
-            yolo_layer = YOLOLayer(anchors, num_classes, img_size)
-            modules.add_module(f"yolo_{module_i}", yolo_layer)
         # Register module list and number of output filters
         module_list.append(modules)
         output_filters.append(filters)
